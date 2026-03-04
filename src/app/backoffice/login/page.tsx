@@ -1,12 +1,11 @@
+import { loginAction } from "./actions";
+
 export default function Login() {
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-      }}
-    >
-      <input type='email' />
-      <input type='password' name='' id='' />
+    <form action={loginAction}>
+      <input type='email' name='email' placeholder='email' />
+      <input type='password' name='password' placeholder='password' />
+      <button type='submit'>Login</button>
     </form>
   );
 }
