@@ -1,61 +1,47 @@
 # AGENTS.md
 
-This file provides guidance for AI coding agents operating in this repository.
+Guidance for AI coding agents operating in this repository.
 
 ## Project Overview
 
-Next.js 16 backoffice application using the App Router (`src/app/`), TypeScript with strict mode, and Tailwind CSS v4. Package manager is **npm**.
+Next.js 16 backoffice app using the App Router (`src/app/`), React 19, TypeScript strict mode, and Tailwind CSS v4. Package manager is **npm**.
 
 ## Build / Lint / Test Commands
 
 ```bash
-# Development server
-npm run dev
-
-# Production build (also serves as type-check)
-npm run build
-
-# Lint (ESLint 9 flat config, no args needed)
-npm run lint
-
-# Start production server (requires build first)
-npm run start
+npm run dev          # Development server
+npm run build        # Production build (also runs type-check)
+npm run lint         # ESLint 9 flat config (no args needed)
+npm run start        # Start production server (requires build first)
+npx tsc --noEmit     # Quick type-check without building
 ```
 
 ### Testing
 
-No test framework is configured yet. When one is added (likely Vitest given the ecosystem), update this section. Expected patterns:
+No test framework is configured yet. When one is added (likely Vitest), update this section.
 
 ```bash
-# Run all tests (once configured)
-npm test
-
-# Run a single test file
-npx vitest run path/to/file.test.ts
-
-# Run tests matching a name pattern
-npx vitest run -t "pattern"
+npm test                                # Run all tests (once configured)
+npx vitest run path/to/file.test.ts     # Run a single test file
+npx vitest run -t "pattern"             # Run tests matching a name pattern
 ```
 
-### Type Checking
+### Pre-commit Checklist
 
-There is no standalone `tsc` script. Use `npm run build` to catch type errors (Next.js runs TypeScript compilation during build). For a quick type-check without building:
-
-```bash
-npx tsc --noEmit
-```
+Run `npm run lint` and `npm run build` before committing. Both must pass.
 
 ## Project Structure
 
 ```
 src/
   app/                  # Next.js App Router pages and layouts
-    layout.tsx          # Root layout (Geist fonts, global CSS)
+    layout.tsx          # Root layout (Geist fonts, global CSS import)
     page.tsx            # Landing page
-    globals.css         # Tailwind v4 import, CSS custom properties
+    globals.css         # Tailwind v4 theme (@theme inline), CSS custom properties
     backoffice/
       login/
-        page.tsx        # Login form
+        page.tsx        # Login form (Server Component using form action)
+        actions.ts      # Server Actions ("use server")
 public/                 # Static assets (SVGs)
 ```
 
@@ -63,27 +49,28 @@ public/                 # Static assets (SVGs)
 
 ### TypeScript
 
-- **Strict mode** is enabled (`"strict": true` in tsconfig.json).
-- Target: ES2017. Module resolution: `bundler`.
+- **Strict mode** is enabled (`"strict": true`). Target: ES2017, module resolution: `bundler`.
 - Use explicit types for function parameters and return values on exported functions.
-- Prefer `type` imports when importing only types: `import type { Foo } from "bar"`.
-- Use `Readonly<>` wrapper for component props (see `layout.tsx` pattern).
+- Prefer `import type` when importing only types: `import type { Foo } from "bar"`.
+- Wrap component props in `Readonly<>`:
+  ```ts
+  export default function RootLayout({
+    children,
+  }: Readonly<{ children: React.ReactNode }>) {
+  ```
 
 ### Path Aliases
 
-Use the `@/*` alias for imports from `src/`:
+Use the `@/*` alias (maps to `src/*`) for non-relative imports:
 
 ```ts
-// Good
-import { Button } from "@/components/Button";
-
-// Bad
-import { Button } from "../../../components/Button";
+import { Button } from "@/components/Button";   // Good
+import { Button } from "../../../components/Button"; // Bad
 ```
 
-### Imports
+### Import Order
 
-Order imports as follows (separated by blank lines):
+Separate groups with blank lines, ordered as:
 
 1. React / Next.js built-ins (`react`, `next/*`)
 2. Third-party libraries
@@ -93,41 +80,53 @@ Order imports as follows (separated by blank lines):
 
 ### Components
 
-- Use **function declarations** for page/layout components: `export default function PageName()`.
-- Place each route's page component in `src/app/<route>/page.tsx`.
-- Layouts go in `src/app/<route>/layout.tsx`.
-- Shared components should go in `src/components/` (create when needed).
-- Keep components as **Server Components** by default. Only add `"use client"` when the component needs browser APIs, event handlers, or React hooks (`useState`, `useEffect`, etc.).
+- Use **function declarations** with `export default`: `export default function PageName()`.
+- Route pages go in `src/app/<route>/page.tsx`, layouts in `layout.tsx`.
+- Shared components go in `src/components/` (PascalCase filenames: `Button.tsx`).
+- **Server Components by default.** Only add `"use client"` when the component needs browser APIs, event handlers, or React hooks (`useState`, `useEffect`, etc.).
+
+### Server Actions
+
+- Place in a separate `actions.ts` file with `"use server"` directive at the top.
+- Accept `FormData` for form submissions. Throw on errors (do not silently fail).
+  ```ts
+  "use server";
+  export async function loginAction(formData: FormData) {
+    const email = formData.get("email");
+    // ...
+    if (!response.ok) throw new Error("Login failed");
+  }
+  ```
 
 ### Naming Conventions
 
-| Item                    | Convention         | Example                     |
-|-------------------------|--------------------|-----------------------------|
-| Component files         | PascalCase or `page.tsx`/`layout.tsx` for routes | `Button.tsx`, `page.tsx` |
-| Component functions     | PascalCase         | `LoginForm`                 |
-| Hooks                   | camelCase, `use` prefix | `useAuth`              |
-| Utility functions       | camelCase          | `formatDate`                |
-| Constants               | UPPER_SNAKE_CASE   | `MAX_RETRIES`               |
-| Types / Interfaces      | PascalCase         | `UserProfile`               |
-| CSS files               | kebab-case         | `globals.css`               |
-| Directories             | kebab-case         | `backoffice/login/`         |
+| Item                | Convention                  | Example              |
+|---------------------|-----------------------------|----------------------|
+| Component files     | PascalCase or `page.tsx`/`layout.tsx` | `Button.tsx`  |
+| Component functions | PascalCase                  | `LoginForm`          |
+| Hooks               | camelCase, `use` prefix     | `useAuth`            |
+| Utility functions   | camelCase                   | `formatDate`         |
+| Constants           | UPPER_SNAKE_CASE            | `MAX_RETRIES`        |
+| Types / Interfaces  | PascalCase                  | `UserProfile`        |
+| CSS files           | kebab-case                  | `globals.css`        |
+| Directories         | kebab-case                  | `backoffice/login/`  |
 
 ### Styling
 
-- **Tailwind CSS v4** via PostCSS plugin (`@tailwindcss/postcss`).
-- Use Tailwind utility classes directly in JSX `className` attributes.
-- Global CSS variables are defined in `src/app/globals.css` using `@theme inline` and `:root`.
-- Support both light and dark modes using `dark:` variant classes and `prefers-color-scheme` media query.
+- **Tailwind CSS v4** via PostCSS plugin (`@tailwindcss/postcss`). No `tailwind.config.*` file -- theme is configured in `globals.css` using `@theme inline`.
+- Use Tailwind utility classes directly in `className` attributes.
+- Support light/dark modes with `dark:` variant classes and `prefers-color-scheme`.
 - Fonts: Geist Sans (`--font-geist-sans`) and Geist Mono (`--font-geist-mono`).
 
 ### Formatting
 
-- No Prettier is configured. Follow existing code style:
-  - 2-space indentation.
-  - Double quotes for JSX attribute strings; double quotes for JS/TS strings (match ESLint defaults).
-  - Semicolons at end of statements.
-  - Trailing commas in multi-line structures.
-  - Use template literals for string interpolation instead of concatenation.
+No Prettier configured. Follow existing code style:
+
+- 2-space indentation.
+- **Double quotes** for all JS/TS/JSX strings.
+- Semicolons at end of statements.
+- Trailing commas in multi-line structures.
+- Template literals for string interpolation (never concatenation).
 
 ### Error Handling
 
@@ -138,31 +137,26 @@ Order imports as follows (separated by blank lines):
 
 ### ESLint
 
-ESLint 9 flat config is in `eslint.config.mjs`. It extends:
-- `eslint-config-next/core-web-vitals` -- performance rules for Next.js
+ESLint 9 flat config (`eslint.config.mjs`) extends:
+- `eslint-config-next/core-web-vitals` -- performance and a11y rules
 - `eslint-config-next/typescript` -- TypeScript-specific rules
-
-Run `npm run lint` before committing. Fix all warnings and errors.
 
 ## Environment Variables
 
-- `.env*` files are gitignored. Never commit secrets.
+- `.env*` files are gitignored. **Never commit secrets.**
 - Use `NEXT_PUBLIC_` prefix for client-side environment variables.
 - Access server-side env vars via `process.env.VAR_NAME` in Server Components or API routes only.
 
 ## Git Practices
 
 - Do not commit `node_modules/`, `.next/`, `.env*`, or `*.tsbuildinfo`.
-- Verify `npm run lint` and `npm run build` pass before committing.
+- Verify lint and build pass before committing (see Pre-commit Checklist above).
 
 ## Adding Dependencies
 
 ```bash
-# Production dependency
-npm install <package>
-
-# Dev dependency
-npm install --save-dev <package>
+npm install <package>            # Production dependency
+npm install --save-dev <package> # Dev dependency
 ```
 
 Prefer well-maintained, widely-adopted packages. Check bundle size impact for client-side dependencies.
