@@ -1,7 +1,5 @@
+import { CONSTANTS } from "@/utils/constants";
 import { cookies } from "next/headers";
-
-const AUTH_COOKIE_NAME = "auth_token";
-const API_BASE_URL = process.env.BACKOFFICE_API_URL ?? "http://[::1]:8080";
 
 /**
  * Set the auth token as an HTTP-only secure cookie.
@@ -12,7 +10,7 @@ export async function setAuthCookie(
   maxAgeSeconds: number,
 ): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(AUTH_COOKIE_NAME, token, {
+  cookieStore.set(CONSTANTS.AUTH_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -26,7 +24,7 @@ export async function setAuthCookie(
  */
 export async function clearAuthCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(AUTH_COOKIE_NAME);
+  cookieStore.delete(CONSTANTS.AUTH_COOKIE_NAME);
 }
 
 /**
@@ -35,7 +33,7 @@ export async function clearAuthCookie(): Promise<void> {
  */
 export async function getAuthToken(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get(AUTH_COOKIE_NAME)?.value ?? null;
+  return cookieStore.get(CONSTANTS.AUTH_COOKIE_NAME)?.value ?? null;
 }
 
 /**
@@ -54,9 +52,7 @@ export async function getAuthHeaders(): Promise<HeadersInit> {
   }
 
   return {
-    "Authorization": `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 }
-
-export { AUTH_COOKIE_NAME, API_BASE_URL };

@@ -2,18 +2,30 @@
 
 import { redirect } from "next/navigation";
 
-import { setAuthCookie, API_BASE_URL } from "@/lib/auth";
+import { setAuthCookie } from "@/lib/auth";
+import { CONSTANTS } from "@/utils/constants";
 
 interface LoginResponse {
-  access_token: string;
-  expires_in: number;
+  user: {
+    id: string;
+    email: string;
+    permissions: string[];
+  };
+  session: {
+    tokenType: string;
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: number;
+    expiresIn: number;
+  };
 }
 
 export async function loginAction(formData: FormData): Promise<void> {
   const email = formData.get("email");
   const password = formData.get("password");
+  console.log("Login action called with email:", email);
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/admin/login`, {
+  const response = await fetch(`${CONSTANTS.API_BASE_URL}/api/v1/admin/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -21,13 +33,17 @@ export async function loginAction(formData: FormData): Promise<void> {
     body: JSON.stringify({ email, password }),
   });
 
+  console.log("Login response status:", response.status);
+
   if (!response.ok) {
     throw new Error("Login failed");
   }
 
   const data: LoginResponse = await response.json();
 
-  await setAuthCookie(data.access_token, data.expires_in);
+  console.log("Login successful, received data:", data);
+
+  await setAuthCookie(data.session.accessToken, data.session.expiresIn);
 
   redirect("/backoffice");
 }
