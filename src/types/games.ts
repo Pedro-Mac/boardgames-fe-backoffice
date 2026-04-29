@@ -1,3 +1,9 @@
+export interface Category {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
 export interface Game {
   id: string;
   name: string;
@@ -10,10 +16,27 @@ export interface Game {
   age_recommendation: number;
   publisher: string;
   year_published: number;
-  image_url: string;
-  created_by: string;
+  image_url: string | null;
+  stock: number;
+  added_by: string | null;
   created_at: string;
-  updated_at: string;
+  categories: Category[];
+}
+
+export interface CreateGameInput {
+  name: string;
+  description: string;
+  price: number; // in cents
+  min_players: number;
+  max_players: number;
+  min_play_time: number; // in minutes
+  max_play_time: number; // in minutes
+  age_recommendation: number;
+  publisher: string;
+  year_published: number;
+  stock?: number;
+  image_url?: string | null;
+  category_ids?: string[];
 }
 
 export interface Pagination {
@@ -27,3 +50,8 @@ export interface ListGamesOutput {
   games: Game[];
   pagination: Pagination;
 }
+
+export interface ListCategoriesOutput {
+  categories: Category[];
+}
+

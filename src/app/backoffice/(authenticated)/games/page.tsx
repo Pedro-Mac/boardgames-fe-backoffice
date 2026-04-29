@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ListGamesOutput } from "@/types/games";
 import { getAuthHeaders } from "@/lib/auth";
 import { CONSTANTS } from "@/utils/constants";
@@ -44,9 +45,17 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Games
         </h1>
-        <span className="text-sm text-zinc-500 dark:text-zinc-400">
-          {pagination.total} {pagination.total === 1 ? "game" : "games"}
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+            {pagination.total} {pagination.total === 1 ? "game" : "games"}
+          </span>
+          <Link
+            href="/backoffice/games/new"
+            className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          >
+            Add game
+          </Link>
+        </div>
       </div>
 
       {games.length === 0 ? (
@@ -69,6 +78,12 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
                     Price
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                    Stock
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                    Categories
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
                     Players
@@ -95,6 +110,25 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {formatPrice(game.price)}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                      {game.stock}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                      {game.categories.length === 0 ? (
+                        <span className="text-zinc-400 dark:text-zinc-600">—</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {game.categories.map((cat) => (
+                            <span
+                              key={cat.id}
+                              className="rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                            >
+                              {cat.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {formatPlayers(game.min_players, game.max_players)}
