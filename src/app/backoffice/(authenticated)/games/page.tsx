@@ -3,6 +3,7 @@ import type { ListGamesOutput } from "@/types/games";
 import { getAuthHeaders } from "@/lib/auth";
 import { CONSTANTS } from "@/utils/constants";
 import Pagination from "@/components/Pagination";
+import DeleteGameButton from "./DeleteGameButton";
 
 function formatPrice(cents: number): string {
   return new Intl.NumberFormat("de-DE", {
@@ -97,6 +98,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                   <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
                     Year
                   </th>
+                  <th className="px-4 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -141,6 +143,9 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {game.year_published}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <DeleteGameButton gameId={game.id} gameName={game.name} />
                     </td>
                   </tr>
                 ))}
