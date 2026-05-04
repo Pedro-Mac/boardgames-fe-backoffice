@@ -1,17 +1,45 @@
 "use client";
 
 import { useActionState } from "react";
-import type { Category } from "@/types/games";
-import { createGameAction, type CreateGameState } from "./actions";
+import type { Category, Game } from "@/types/games";
+
+export type GameFormState = { error: string } | null;
+
+type GameFormAction = (
+  prevState: GameFormState,
+  formData: FormData,
+) => Promise<GameFormState>;
 
 interface GameFormProps {
   categories: Category[];
+  formAction: GameFormAction;
+  submitLabel: string;
+  defaultValues?: Partial<Game>;
 }
 
-export default function GameForm({ categories }: Readonly<GameFormProps>) {
-  const [state, action, isPending] = useActionState<CreateGameState, FormData>(
-    createGameAction,
+const inputClass =
+  "rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500";
+
+/** "Create game" → "Creating…", "Save changes" → "Saving…" */
+function toPendingLabel(label: string): string {
+  const verb = label.split(" ")[0];
+  const stem = verb.endsWith("e") ? verb.slice(0, -1) : verb;
+  return `${stem}ing…`;
+}
+
+export default function GameForm({
+  categories,
+  formAction,
+  submitLabel,
+  defaultValues,
+}: Readonly<GameFormProps>) {
+  const [state, action, isPending] = useActionState<GameFormState, FormData>(
+    formAction,
     null,
+  );
+
+  const assignedCategoryIds = new Set(
+    defaultValues?.categories?.map((c) => c.id) ?? [],
   );
 
   return (
@@ -40,7 +68,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               name="name"
               type="text"
               required
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.name}
+              className={inputClass}
               placeholder="Catan"
             />
           </div>
@@ -56,7 +85,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               name="publisher"
               type="text"
               required
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.publisher}
+              className={inputClass}
               placeholder="Kosmos"
             />
           </div>
@@ -73,7 +103,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
             name="description"
             required
             rows={4}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+            defaultValue={defaultValues?.description}
+            className={inputClass}
             placeholder="A brief description of the game…"
           />
         </div>
@@ -99,7 +130,12 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               required
               min="0"
               step="0.01"
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={
+                defaultValues?.price !== undefined
+                  ? (defaultValues.price / 100).toFixed(2)
+                  : undefined
+              }
+              className={inputClass}
               placeholder="29.99"
             />
           </div>
@@ -117,8 +153,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               required
               min="0"
               step="1"
-              defaultValue={0}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.stock ?? 0}
+              className={inputClass}
             />
           </div>
         </div>
@@ -144,7 +180,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               required
               min="1"
               step="1"
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.min_players}
+              className={inputClass}
               placeholder="2"
             />
           </div>
@@ -162,7 +199,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               required
               min="1"
               step="1"
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.max_players}
+              className={inputClass}
               placeholder="4"
             />
           </div>
@@ -180,7 +218,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               required
               min="1"
               step="1"
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.min_play_time}
+              className={inputClass}
               placeholder="60"
             />
           </div>
@@ -198,7 +237,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               required
               min="1"
               step="1"
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.max_play_time}
+              className={inputClass}
               placeholder="120"
             />
           </div>
@@ -225,7 +265,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               required
               min="0"
               step="1"
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.age_recommendation}
+              className={inputClass}
               placeholder="10"
             />
           </div>
@@ -243,7 +284,8 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
               required
               min="1900"
               step="1"
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder-zinc-500"
+              defaultValue={defaultValues?.year_published}
+              className={inputClass}
               placeholder="1995"
             />
           </div>
@@ -271,6 +313,7 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
                   type="checkbox"
                   name="category_ids"
                   value={cat.id}
+                  defaultChecked={assignedCategoryIds.has(cat.id)}
                   className="h-4 w-4 rounded border-zinc-300 accent-zinc-900 dark:border-zinc-600 dark:accent-zinc-100"
                 />
                 <span className="text-zinc-700 dark:text-zinc-300">{cat.name}</span>
@@ -314,7 +357,7 @@ export default function GameForm({ categories }: Readonly<GameFormProps>) {
           disabled={isPending}
           className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
         >
-          {isPending ? "Creating…" : "Create game"}
+          {isPending ? toPendingLabel(submitLabel) : submitLabel}
         </button>
         <a
           href="/backoffice/games"

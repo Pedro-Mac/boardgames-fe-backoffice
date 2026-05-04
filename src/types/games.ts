@@ -39,6 +39,26 @@ export interface CreateGameInput {
   category_ids?: string[];
 }
 
+export interface UpdateGameInput {
+  name?: string;
+  description?: string;
+  price?: number; // in cents
+  min_players?: number;
+  max_players?: number;
+  min_play_time?: number; // in minutes
+  max_play_time?: number; // in minutes
+  age_recommendation?: number;
+  publisher?: string;
+  year_published?: number;
+  image_url?: string | null;
+  stock?: number;
+  category_ids?: string[];
+}
+
+export interface GetGameOutput {
+  game: Game;
+}
+
 export interface Pagination {
   page: number;
   size: number;

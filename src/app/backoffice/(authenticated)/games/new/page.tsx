@@ -2,6 +2,7 @@ import type { ListCategoriesOutput } from "@/types/games";
 import { getAuthHeaders } from "@/lib/auth";
 import { CONSTANTS } from "@/utils/constants";
 import GameForm from "./GameForm";
+import { createGameAction } from "./actions";
 
 export default async function NewGamePage() {
   const headers = await getAuthHeaders();
@@ -28,7 +29,11 @@ export default async function NewGamePage() {
       </div>
 
       <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
-        <GameForm categories={categories} />
+        <GameForm
+          categories={categories}
+          formAction={createGameAction}
+          submitLabel="Create game"
+        />
       </div>
     </div>
   );

@@ -144,9 +144,32 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {game.year_published}
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <DeleteGameButton gameId={game.id} gameName={game.name} />
-                    </td>
+                     <td className="px-4 py-3 text-right">
+                       <div className="flex items-center justify-end gap-2">
+                         <Link
+                           href={`/backoffice/games/${game.id}/edit`}
+                           className="rounded p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                           aria-label={`Edit ${game.name}`}
+                         >
+                           <svg
+                             xmlns="http://www.w3.org/2000/svg"
+                             width="16"
+                             height="16"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             strokeWidth="2"
+                             strokeLinecap="round"
+                             strokeLinejoin="round"
+                             aria-hidden="true"
+                           >
+                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z" />
+                           </svg>
+                         </Link>
+                         <DeleteGameButton gameId={game.id} gameName={game.name} />
+                       </div>
+                     </td>
                   </tr>
                 ))}
               </tbody>
