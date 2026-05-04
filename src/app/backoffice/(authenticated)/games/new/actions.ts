@@ -21,7 +21,7 @@ export async function createGameAction(
   const categoryIds = formData.getAll("category_ids") as string[];
 
   const body: CreateGameInput = {
-    name: formData.get("name") as string,
+    title: formData.get("title") as string,
     description: formData.get("description") as string,
     price: Math.round(priceEuros * 100),
     min_players: parseInt(formData.get("min_players") as string, 10),

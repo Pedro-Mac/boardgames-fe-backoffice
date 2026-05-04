@@ -6,7 +6,7 @@ export interface Category {
 
 export interface Game {
   id: string;
-  name: string;
+  title: string;
   description: string;
   price: number; // in cents
   min_players: number;
@@ -24,7 +24,7 @@ export interface Game {
 }
 
 export interface CreateGameInput {
-  name: string;
+  title: string;
   description: string;
   price: number; // in cents
   min_players: number;
@@ -40,7 +40,7 @@ export interface CreateGameInput {
 }
 
 export interface UpdateGameInput {
-  name?: string;
+  title?: string;
   description?: string;
   price?: number; // in cents
   min_players?: number;
@@ -74,4 +74,3 @@ export interface ListGamesOutput {
 export interface ListCategoriesOutput {
   categories: Category[];
 }
-

@@ -39,92 +39,95 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
   }
 
   const { games, pagination }: ListGamesOutput = await response.json();
+  const gamesData = games;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+    <div className='flex flex-col gap-6'>
+      <div className='flex items-center justify-between'>
+        <h1 className='text-xl font-semibold text-zinc-900 dark:text-zinc-50'>
           Games
         </h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+        <div className='flex items-center gap-4'>
+          <span className='text-sm text-zinc-500 dark:text-zinc-400'>
             {pagination.total} {pagination.total === 1 ? "game" : "games"}
           </span>
           <Link
-            href="/backoffice/games/new"
-            className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            href='/backoffice/games/new'
+            className='rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200'
           >
             Add game
           </Link>
         </div>
       </div>
 
-      {games.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-200 py-20 text-center dark:border-zinc-700">
-          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+      {gamesData.length === 0 ? (
+        <div className='flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-200 py-20 text-center dark:border-zinc-700'>
+          <p className='text-sm font-medium text-zinc-900 dark:text-zinc-50'>
             No games yet
           </p>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className='mt-1 text-sm text-zinc-500 dark:text-zinc-400'>
             Add your first game to get started.
           </p>
         </div>
       ) : (
         <>
-          <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
-            <table className="w-full text-sm">
-              <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/50">
+          <div className='overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700'>
+            <table className='w-full text-sm'>
+              <thead className='border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/50'>
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Name
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Price
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Stock
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Categories
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Players
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Play time
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Publisher
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Year
                   </th>
-                  <th className="px-4 py-3" />
+                  <th className='px-4 py-3' />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                {games.map((game) => (
+              <tbody className='divide-y divide-zinc-100 dark:divide-zinc-800'>
+                {gamesData.map((game) => (
                   <tr
                     key={game.id}
-                    className="bg-white transition-colors hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
+                    className='bg-white transition-colors hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/50'
                   >
-                    <td className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-50">
-                      {game.name}
+                    <td className='px-4 py-3 font-medium text-zinc-900 dark:text-zinc-50'>
+                      {game.title}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                    <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
                       {formatPrice(game.price)}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                    <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
                       {game.stock}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                    {/*<td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
                       {game.categories.length === 0 ? (
-                        <span className="text-zinc-400 dark:text-zinc-600">—</span>
+                        <span className='text-zinc-400 dark:text-zinc-600'>
+                          —
+                        </span>
                       ) : (
-                        <div className="flex flex-wrap gap-1">
+                        <div className='flex flex-wrap gap-1'>
                           {game.categories.map((cat) => (
                             <span
                               key={cat.id}
-                              className="rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                              className='rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
                             >
                               {cat.name}
                             </span>
@@ -132,44 +135,48 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                    */}
+                    <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
                       {formatPlayers(game.min_players, game.max_players)}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                    <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
                       {formatPlayTime(game.min_play_time, game.max_play_time)}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                    <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
                       {game.publisher}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
+                    <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
                       {game.year_published}
                     </td>
-                     <td className="px-4 py-3 text-right">
-                       <div className="flex items-center justify-end gap-2">
-                         <Link
-                           href={`/backoffice/games/${game.id}/edit`}
-                           className="rounded p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
-                           aria-label={`Edit ${game.name}`}
-                         >
-                           <svg
-                             xmlns="http://www.w3.org/2000/svg"
-                             width="16"
-                             height="16"
-                             viewBox="0 0 24 24"
-                             fill="none"
-                             stroke="currentColor"
-                             strokeWidth="2"
-                             strokeLinecap="round"
-                             strokeLinejoin="round"
-                             aria-hidden="true"
-                           >
-                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z" />
-                           </svg>
-                         </Link>
-                         <DeleteGameButton gameId={game.id} gameName={game.name} />
-                       </div>
-                     </td>
+                    <td className='px-4 py-3 text-right'>
+                      <div className='flex items-center justify-end gap-2'>
+                        <Link
+                          href={`/backoffice/games/${game.id}/edit`}
+                          className='rounded p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300'
+                          aria-label={`Edit ${game.title}`}
+                        >
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            width='16'
+                            height='16'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            aria-hidden='true'
+                          >
+                            <path d='M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7' />
+                            <path d='M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z' />
+                          </svg>
+                        </Link>
+                        <DeleteGameButton
+                          gameId={game.id}
+                          gameName={game.title}
+                        />
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -177,8 +184,11 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
           </div>
 
           {pagination.totalPages > 1 && (
-            <div className="flex justify-end">
-              <Pagination page={pagination.page} totalPages={pagination.totalPages} />
+            <div className='flex justify-end'>
+              <Pagination
+                page={pagination.page}
+                totalPages={pagination.totalPages}
+              />
             </div>
           )}
         </>

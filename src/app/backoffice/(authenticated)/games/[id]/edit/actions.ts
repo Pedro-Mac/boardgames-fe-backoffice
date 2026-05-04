@@ -19,10 +19,10 @@ export async function updateGameAction(
     return { error: "Price must be a valid non-negative number." };
   }
 
-  const categoryIds = formData.getAll("category_ids") as string[];
+  // const categoryIds = formData.getAll("category_ids") as string[];
 
   const body: UpdateGameInput = {
-    name: formData.get("name") as string,
+    title: formData.get("title") as string,
     description: formData.get("description") as string,
     price: Math.round(priceEuros * 100),
     min_players: parseInt(formData.get("min_players") as string, 10),
@@ -33,7 +33,7 @@ export async function updateGameAction(
     publisher: formData.get("publisher") as string,
     year_published: parseInt(formData.get("year_published") as string, 10),
     stock: parseInt(formData.get("stock") as string, 10) || 0,
-    category_ids: categoryIds,
+    // category_ids: categoryIds,
   };
 
   const headers = await getAuthHeaders();
