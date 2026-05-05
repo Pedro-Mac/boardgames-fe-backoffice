@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { GetGameOutput, ListCategoriesOutput } from "@/types/games";
+import type { GameOutput, ListCategoriesOutput } from "@/types/games";
 import { getAuthHeaders } from "@/lib/auth";
 import { CONSTANTS } from "@/utils/constants";
 import GameForm from "../../new/GameForm";
@@ -32,7 +32,8 @@ export default async function EditGamePage({ params }: EditGamePageProps) {
     );
   }
 
-  const { game }: GetGameOutput = await gameResponse.json();
+  // The /:id endpoint returns GameOutput directly (not wrapped in { game: ... })
+  const game: GameOutput = await gameResponse.json();
   const { categories }: ListCategoriesOutput = await categoriesResponse.json();
 
   const boundAction = updateGameAction.bind(null, id);

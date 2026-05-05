@@ -4,23 +4,52 @@ export interface Category {
   created_at: string;
 }
 
-export interface Game {
+export interface GameOutput {
   id: string;
+
+  // Core identity
   title: string;
   description: string;
-  price: number; // in cents
-  min_players: number;
-  max_players: number;
-  min_play_time: number; // in minutes
-  max_play_time: number; // in minutes
-  age_recommendation: number;
-  publisher: string;
-  year_published: number;
-  image_url: string | null;
-  stock: number;
-  added_by: string | null;
-  created_at: string;
-  categories: Category[];
+
+  // Gameplay characteristics
+  gameplay: {
+    players: {
+      min: number;
+      max: number;
+    };
+    playtime: {
+      min: number;
+      max: number;
+    };
+    minAge: number;
+  };
+
+  // People & companies
+  attribution: {
+    publisher: string;
+    authors: string[];
+    designers: string[];
+    artists: string[];
+  };
+
+  // Classification
+  taxonomy: {
+    categories: string[]; // category names
+    mechanics: string[];
+  };
+
+  // Relationships with other games
+  relationships: {
+    type: "base" | "expansion";
+    baseGameIds: string[];
+    expansionIds: string[];
+  };
+
+  // Commercial data
+  commerce: {
+    price: number; // in cents
+    inStock: boolean;
+  };
 }
 
 export interface CreateGameInput {
@@ -33,7 +62,7 @@ export interface CreateGameInput {
   max_play_time: number; // in minutes
   age_recommendation: number;
   publisher: string;
-  year_published: number;
+  year_published?: number;
   stock?: number;
   image_url?: string | null;
   category_ids?: string[];
@@ -55,10 +84,6 @@ export interface UpdateGameInput {
   category_ids?: string[];
 }
 
-export interface GetGameOutput {
-  game: Game;
-}
-
 export interface Pagination {
   page: number;
   size: number;
@@ -67,7 +92,7 @@ export interface Pagination {
 }
 
 export interface ListGamesOutput {
-  games: Game[];
+  games: GameOutput[];
   pagination: Pagination;
 }
 

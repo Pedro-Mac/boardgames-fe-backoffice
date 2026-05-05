@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import type { Category, Game } from "@/types/games";
+import type { Category, GameOutput } from "@/types/games";
 
 export type GameFormState = { error: string } | null;
 
@@ -14,7 +14,7 @@ interface GameFormProps {
   categories: Category[];
   formAction: GameFormAction;
   submitLabel: string;
-  defaultValues?: Partial<Game>;
+  defaultValues?: Partial<GameOutput>;
 }
 
 const inputClass =
@@ -38,8 +38,15 @@ export default function GameForm({
     null,
   );
 
+  // taxonomy.categories is string[] of names; match against the categories list by name
+  // to determine which checkbox IDs should be pre-checked.
+  const assignedCategoryNames = new Set(
+    defaultValues?.taxonomy?.categories ?? [],
+  );
   const assignedCategoryIds = new Set(
-    defaultValues?.categories?.map((c) => c.id) ?? [],
+    categories
+      .filter((c) => assignedCategoryNames.has(c.name))
+      .map((c) => c.id),
   );
 
   return (
@@ -85,7 +92,7 @@ export default function GameForm({
               name='publisher'
               type='text'
               required
-              defaultValue={defaultValues?.publisher}
+              defaultValue={defaultValues?.attribution?.publisher}
               className={inputClass}
               placeholder='Kosmos'
             />
@@ -115,48 +122,28 @@ export default function GameForm({
         <h2 className='text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400'>
           Pricing &amp; stock
         </h2>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-          <div className='flex flex-col gap-1.5'>
-            <label
-              htmlFor='price'
-              className='text-sm font-medium text-zinc-700 dark:text-zinc-300'
-            >
-              Price (€) <span className='text-red-500'>*</span>
-            </label>
-            <input
-              id='price'
-              name='price'
-              type='number'
-              required
-              min='0'
-              step='0.01'
-              defaultValue={
-                defaultValues?.price !== undefined
-                  ? (defaultValues.price / 100).toFixed(2)
-                  : undefined
-              }
-              className={inputClass}
-              placeholder='29.99'
-            />
-          </div>
-          <div className='flex flex-col gap-1.5'>
-            <label
-              htmlFor='stock'
-              className='text-sm font-medium text-zinc-700 dark:text-zinc-300'
-            >
-              Stock <span className='text-red-500'>*</span>
-            </label>
-            <input
-              id='stock'
-              name='stock'
-              type='number'
-              required
-              min='0'
-              step='1'
-              defaultValue={defaultValues?.stock ?? 0}
-              className={inputClass}
-            />
-          </div>
+        <div className='flex flex-col gap-1.5'>
+          <label
+            htmlFor='price'
+            className='text-sm font-medium text-zinc-700 dark:text-zinc-300'
+          >
+            Price (€) <span className='text-red-500'>*</span>
+          </label>
+          <input
+            id='price'
+            name='price'
+            type='number'
+            required
+            min='0'
+            step='0.01'
+            defaultValue={
+              defaultValues?.commerce?.price !== undefined
+                ? (defaultValues.commerce.price / 100).toFixed(2)
+                : undefined
+            }
+            className={inputClass}
+            placeholder='29.99'
+          />
         </div>
       </section>
 
@@ -180,7 +167,7 @@ export default function GameForm({
               required
               min='1'
               step='1'
-              defaultValue={defaultValues?.min_players}
+              defaultValue={defaultValues?.gameplay?.players?.min}
               className={inputClass}
               placeholder='2'
             />
@@ -199,7 +186,7 @@ export default function GameForm({
               required
               min='1'
               step='1'
-              defaultValue={defaultValues?.max_players}
+              defaultValue={defaultValues?.gameplay?.players?.max}
               className={inputClass}
               placeholder='4'
             />
@@ -218,7 +205,7 @@ export default function GameForm({
               required
               min='1'
               step='1'
-              defaultValue={defaultValues?.min_play_time}
+              defaultValue={defaultValues?.gameplay?.playtime?.min}
               className={inputClass}
               placeholder='60'
             />
@@ -237,7 +224,7 @@ export default function GameForm({
               required
               min='1'
               step='1'
-              defaultValue={defaultValues?.max_play_time}
+              defaultValue={defaultValues?.gameplay?.playtime?.max}
               className={inputClass}
               placeholder='120'
             />
@@ -250,45 +237,24 @@ export default function GameForm({
         <h2 className='text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400'>
           Details
         </h2>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-          <div className='flex flex-col gap-1.5'>
-            <label
-              htmlFor='age_recommendation'
-              className='text-sm font-medium text-zinc-700 dark:text-zinc-300'
-            >
-              Age recommendation <span className='text-red-500'>*</span>
-            </label>
-            <input
-              id='age_recommendation'
-              name='age_recommendation'
-              type='number'
-              required
-              min='0'
-              step='1'
-              defaultValue={defaultValues?.age_recommendation}
-              className={inputClass}
-              placeholder='10'
-            />
-          </div>
-          <div className='flex flex-col gap-1.5'>
-            <label
-              htmlFor='year_published'
-              className='text-sm font-medium text-zinc-700 dark:text-zinc-300'
-            >
-              Year published <span className='text-red-500'>*</span>
-            </label>
-            <input
-              id='year_published'
-              name='year_published'
-              type='number'
-              required
-              min='1900'
-              step='1'
-              defaultValue={defaultValues?.year_published}
-              className={inputClass}
-              placeholder='1995'
-            />
-          </div>
+        <div className='flex flex-col gap-1.5'>
+          <label
+            htmlFor='age_recommendation'
+            className='text-sm font-medium text-zinc-700 dark:text-zinc-300'
+          >
+            Age recommendation <span className='text-red-500'>*</span>
+          </label>
+          <input
+            id='age_recommendation'
+            name='age_recommendation'
+            type='number'
+            required
+            min='0'
+            step='1'
+            defaultValue={defaultValues?.gameplay?.minAge}
+            className={inputClass}
+            placeholder='10'
+          />
         </div>
       </section>
 

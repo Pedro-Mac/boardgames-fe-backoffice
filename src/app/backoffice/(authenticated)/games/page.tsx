@@ -39,7 +39,6 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
   }
 
   const { games, pagination }: ListGamesOutput = await response.json();
-  const gamesData = games;
 
   return (
     <div className='flex flex-col gap-6'>
@@ -60,7 +59,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
         </div>
       </div>
 
-      {gamesData.length === 0 ? (
+      {games.length === 0 ? (
         <div className='flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-200 py-20 text-center dark:border-zinc-700'>
           <p className='text-sm font-medium text-zinc-900 dark:text-zinc-50'>
             No games yet
@@ -96,14 +95,11 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                   <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Publisher
                   </th>
-                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
-                    Year
-                  </th>
                   <th className='px-4 py-3' />
                 </tr>
               </thead>
               <tbody className='divide-y divide-zinc-100 dark:divide-zinc-800'>
-                {gamesData.map((game) => (
+                {games.map((game) => (
                   <tr
                     key={game.id}
                     className='bg-white transition-colors hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/50'
@@ -112,41 +108,51 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                       {game.title}
                     </td>
                     <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
-                      {formatPrice(game.price)}
+                      {formatPrice(game.commerce.price)}
+                    </td>
+                    <td className='px-4 py-3'>
+                      {game.commerce.inStock ? (
+                        <span className='inline-flex items-center rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-950 dark:text-green-400 dark:ring-green-500/20'>
+                          In stock
+                        </span>
+                      ) : (
+                        <span className='inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-950 dark:text-red-400 dark:ring-red-500/20'>
+                          Out of stock
+                        </span>
+                      )}
                     </td>
                     <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
-                      {game.stock}
-                    </td>
-                    {/*<td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
-                      {game.categories.length === 0 ? (
+                      {game.taxonomy.categories.length === 0 ? (
                         <span className='text-zinc-400 dark:text-zinc-600'>
                           —
                         </span>
                       ) : (
                         <div className='flex flex-wrap gap-1'>
-                          {game.categories.map((cat) => (
+                          {game.taxonomy.categories.map((cat) => (
                             <span
-                              key={cat.id}
+                              key={cat}
                               className='rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
                             >
-                              {cat.name}
+                              {cat}
                             </span>
                           ))}
                         </div>
                       )}
                     </td>
-                    */}
                     <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
-                      {formatPlayers(game.min_players, game.max_players)}
+                      {formatPlayers(
+                        game.gameplay.players.min,
+                        game.gameplay.players.max,
+                      )}
                     </td>
                     <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
-                      {formatPlayTime(game.min_play_time, game.max_play_time)}
+                      {formatPlayTime(
+                        game.gameplay.playtime.min,
+                        game.gameplay.playtime.max,
+                      )}
                     </td>
                     <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
-                      {game.publisher}
-                    </td>
-                    <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
-                      {game.year_published}
+                      {game.attribution.publisher}
                     </td>
                     <td className='px-4 py-3 text-right'>
                       <div className='flex items-center justify-end gap-2'>

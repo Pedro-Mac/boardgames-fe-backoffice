@@ -30,8 +30,6 @@ export async function createGameAction(
     max_play_time: parseInt(formData.get("max_play_time") as string, 10),
     age_recommendation: parseInt(formData.get("age_recommendation") as string, 10),
     publisher: formData.get("publisher") as string,
-    year_published: parseInt(formData.get("year_published") as string, 10),
-    stock: parseInt(formData.get("stock") as string, 10) || 0,
     category_ids: categoryIds.length > 0 ? categoryIds : undefined,
   };
 
