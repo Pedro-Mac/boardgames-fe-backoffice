@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { GameOutput, ListCategoriesOutput } from "@/types/games";
+import type { GameOutput } from "@/types/games";
 import { getAuthHeaders } from "@/lib/auth";
 import { CONSTANTS } from "@/utils/constants";
 import GameForm from "../../new/GameForm";
@@ -13,10 +13,10 @@ export default async function EditGamePage({ params }: EditGamePageProps) {
   const { id } = await params;
   const headers = await getAuthHeaders();
 
-  const [gameResponse, categoriesResponse] = await Promise.all([
-    fetch(`${CONSTANTS.API_BASE_URL}/api/v1/admin/games/${id}`, { headers }),
-    fetch(`${CONSTANTS.API_BASE_URL}/api/v1/admin/categories`, { headers }),
-  ]);
+  const gameResponse = await fetch(
+    `${CONSTANTS.API_BASE_URL}/api/v1/admin/games/${id}`,
+    { headers },
+  );
 
   if (gameResponse.status === 404) {
     notFound();
@@ -26,15 +26,8 @@ export default async function EditGamePage({ params }: EditGamePageProps) {
     throw new Error(`Failed to fetch game: ${gameResponse.statusText}`);
   }
 
-  if (!categoriesResponse.ok) {
-    throw new Error(
-      `Failed to fetch categories: ${categoriesResponse.statusText}`,
-    );
-  }
-
   // The /:id endpoint returns GameOutput directly (not wrapped in { game: ... })
   const game: GameOutput = await gameResponse.json();
-  const { categories }: ListCategoriesOutput = await categoriesResponse.json();
 
   const boundAction = updateGameAction.bind(null, id);
 
@@ -55,7 +48,6 @@ export default async function EditGamePage({ params }: EditGamePageProps) {
 
       <div className='rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900'>
         <GameForm
-          categories={categories}
           formAction={boundAction}
           submitLabel='Save changes'
           defaultValues={game}

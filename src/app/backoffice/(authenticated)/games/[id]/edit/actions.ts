@@ -19,8 +19,6 @@ export async function updateGameAction(
     return { error: "Price must be a valid non-negative number." };
   }
 
-  // const categoryIds = formData.getAll("category_ids") as string[];
-
   const body: UpdateGameInput = {
     title: formData.get("title") as string,
     description: formData.get("description") as string,
@@ -31,7 +29,6 @@ export async function updateGameAction(
     max_play_time: parseInt(formData.get("max_play_time") as string, 10),
     age_recommendation: parseInt(formData.get("age_recommendation") as string, 10),
     publisher: formData.get("publisher") as string,
-    // category_ids: categoryIds,
   };
 
   const headers = await getAuthHeaders();

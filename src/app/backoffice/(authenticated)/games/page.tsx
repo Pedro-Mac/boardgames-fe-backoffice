@@ -84,9 +84,6 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                     Stock
                   </th>
                   <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
-                    Categories
-                  </th>
-                  <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
                     Players
                   </th>
                   <th className='px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400'>
@@ -119,24 +116,6 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                         <span className='inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-950 dark:text-red-400 dark:ring-red-500/20'>
                           Out of stock
                         </span>
-                      )}
-                    </td>
-                    <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>
-                      {game.taxonomy.categories.length === 0 ? (
-                        <span className='text-zinc-400 dark:text-zinc-600'>
-                          —
-                        </span>
-                      ) : (
-                        <div className='flex flex-wrap gap-1'>
-                          {game.taxonomy.categories.map((cat) => (
-                            <span
-                              key={cat}
-                              className='rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
-                            >
-                              {cat}
-                            </span>
-                          ))}
-                        </div>
                       )}
                     </td>
                     <td className='px-4 py-3 text-zinc-600 dark:text-zinc-400'>

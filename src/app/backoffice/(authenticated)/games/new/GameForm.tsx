@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import type { Category, GameOutput } from "@/types/games";
+import type { GameOutput } from "@/types/games";
 
 export type GameFormState = { error: string } | null;
 
@@ -11,7 +11,6 @@ type GameFormAction = (
 ) => Promise<GameFormState>;
 
 interface GameFormProps {
-  categories: Category[];
   formAction: GameFormAction;
   submitLabel: string;
   defaultValues?: Partial<GameOutput>;
@@ -28,7 +27,6 @@ function toPendingLabel(label: string): string {
 }
 
 export default function GameForm({
-  categories,
   formAction,
   submitLabel,
   defaultValues,
@@ -36,17 +34,6 @@ export default function GameForm({
   const [state, action, isPending] = useActionState<GameFormState, FormData>(
     formAction,
     null,
-  );
-
-  // taxonomy.categories is string[] of names; match against the categories list by name
-  // to determine which checkbox IDs should be pre-checked.
-  const assignedCategoryNames = new Set(
-    defaultValues?.taxonomy?.categories ?? [],
-  );
-  const assignedCategoryIds = new Set(
-    categories
-      .filter((c) => assignedCategoryNames.has(c.name))
-      .map((c) => c.id),
   );
 
   return (
@@ -256,39 +243,6 @@ export default function GameForm({
             placeholder='10'
           />
         </div>
-      </section>
-
-      {/* Categories */}
-      <section className='flex flex-col gap-4'>
-        <h2 className='text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400'>
-          Categories
-        </h2>
-        {categories.length === 0 ? (
-          <p className='text-sm text-zinc-500 dark:text-zinc-400'>
-            No categories available yet. Add categories first to assign them to
-            a game.
-          </p>
-        ) : (
-          <div className='flex flex-wrap gap-3'>
-            {categories.map((cat) => (
-              <label
-                key={cat.id}
-                className='flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-3 py-2 text-sm transition-colors hover:border-zinc-400 has-[:checked]:border-zinc-900 has-[:checked]:bg-zinc-50 dark:border-zinc-700 dark:hover:border-zinc-500 dark:has-[:checked]:border-zinc-100 dark:has-[:checked]:bg-zinc-800'
-              >
-                <input
-                  type='checkbox'
-                  name='category_ids'
-                  value={cat.id}
-                  defaultChecked={assignedCategoryIds.has(cat.id)}
-                  className='h-4 w-4 rounded border-zinc-300 accent-zinc-900 dark:border-zinc-600 dark:accent-zinc-100'
-                />
-                <span className='text-zinc-700 dark:text-zinc-300'>
-                  {cat.name}
-                </span>
-              </label>
-            ))}
-          </div>
-        )}
       </section>
 
       {/* Image URL — placeholder, upload not yet supported */}
