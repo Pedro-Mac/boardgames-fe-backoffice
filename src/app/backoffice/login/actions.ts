@@ -23,7 +23,6 @@ interface LoginResponse {
 export async function loginAction(formData: FormData): Promise<void> {
   const email = formData.get("email");
   const password = formData.get("password");
-  console.log("Login action called with email:", email);
 
   const response = await fetch(`${CONSTANTS.API_BASE_URL}/api/v1/admin/login`, {
     method: "POST",
@@ -33,15 +32,11 @@ export async function loginAction(formData: FormData): Promise<void> {
     body: JSON.stringify({ email, password }),
   });
 
-  console.log("Login response status:", response.status);
-
   if (!response.ok) {
     throw new Error("Login failed");
   }
 
   const data: LoginResponse = await response.json();
-
-  console.log("Login successful, received data:", data);
 
   await setAuthCookie(data.session.accessToken, data.session.expiresIn);
 
